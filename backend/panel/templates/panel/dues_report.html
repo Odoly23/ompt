@@ -1,0 +1,67 @@
+{% extends "panel/base.html" %}{% load l10n %}
+{% block title %}Relatóriu kuota{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+  <h1 class="h3 slab mb-0">Relatóriu kuota {{ year }}</h1>
+  <div class="no-print mt-2 mt-sm-0">
+    <a class="btn btn-outline-dark mr-1" href="{% url 'panel:list' 'payments' %}">Pagamentu hotu</a>
+    <a class="btn btn-outline-dark mr-1" href="{% url 'panel:export_payments' %}">Excel</a>
+    <button class="btn btn-outline-dark" type="button" onclick="window.print()">Imprime</button>
+  </div>
+</div>
+
+{% if rate %}
+<p>Valór kuota: <strong>${{ rate.annual_amount }}</strong> / membru / tinan{% if rate.note %} <span class="text-muted">({{ rate.note }})</span>{% endif %}.</p>
+{% else %}
+<div class="alert alert-warning">Seidauk define valór kuota ba {{ year }}. Tuir Estatutu Art. 22 (j), Konsellu Koordenadór Nasionál mak aprova valór. <a href="{% url 'panel:add' 'rates' %}">Define valór</a>.</div>
+{% endif %}
+
+<form class="form-inline mb-3 no-print" method="get">
+  <label class="mr-2" for="year">Tinan</label>
+  <select id="year" name="year" class="custom-select mr-3 mb-2">{% for y in years %}<option {% if y == year %}selected{% endif %}>{{ y }}</option>{% endfor %}</select>
+  <label class="mr-2" for="show">Hatudu</label>
+  <select id="show" name="show" class="custom-select mr-2 mb-2">
+    <option value="owing" {% if show == 'owing' %}selected{% endif %}>Seidauk selu kompletu</option>
+    <option value="paid" {% if show == 'paid' %}selected{% endif %}>Selu ona</option>
+    <option value="all" {% if show == 'all' %}selected{% endif %}>Hotu</option>
+  </select>
+  <button class="btn btn-outline-dark mb-2">Filtra</button>
+</form>
+
+<div class="card">
+  <div class="table-responsive">
+  <table class="table table-hover mb-0">
+    <thead class="thead-light"><tr><th>Númeru</th><th>Naran</th><th>Munisípiu</th><th>Telefone</th><th class="text-right">Selu ona</th><th class="text-right">Falta</th><th class="no-print">Rejista pagamentu</th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+      <tr>
+        <td>{{ r.m.member_number }}</td><td>{{ r.m.full_name }}</td><td>{{ r.m.municipality }}</td><td>{{ r.m.phone }}</td>
+        <td class="text-right">${{ r.paid }}</td>
+        <td class="text-right {% if r.outstanding %}text-danger font-weight-bold{% endif %}">${{ r.outstanding }}</td>
+        <td class="no-print">
+          {% if r.outstanding %}
+          <form method="post" class="form-inline flex-nowrap">{% csrf_token %}
+            <input type="hidden" name="member" value="{{ r.m.pk }}">
+            <input type="hidden" name="paid_on" value="{{ today|date:'Y-m-d' }}">
+            <label class="sr-only" for="amt{{ r.m.pk }}">Montante</label>
+            <input id="amt{{ r.m.pk }}" name="amount" class="form-control form-control-sm mr-1" style="width:80px" value="{{ r.outstanding|unlocalize }}" inputmode="decimal">
+            <label class="sr-only" for="met{{ r.m.pk }}">Métodu</label>
+            <select id="met{{ r.m.pk }}" name="method" class="custom-select custom-select-sm mr-1" style="width:auto">{% for v, l in methods %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select>
+            <label class="sr-only" for="rec{{ r.m.pk }}">Resibu</label>
+            <input id="rec{{ r.m.pk }}" name="receipt" class="form-control form-control-sm mr-1" style="width:90px" placeholder="Resibu">
+            <button class="btn btn-sm btn-success">Rai</button>
+          </form>
+          {% else %}<span class="text-success">Kompletu</span>{% endif %}
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="7" class="text-muted p-4">Laiha membru iha lista ne'e.</td></tr>
+    {% endfor %}
+    </tbody>
+    {% if rows and show != 'paid' %}
+    <tfoot><tr><th colspan="5" class="text-right">Total falta</th><th class="text-right text-danger">${{ total_out }}</th><th class="no-print"></th></tr></tfoot>
+    {% endif %}
+  </table>
+  </div>
+</div>
+{% endblock %}

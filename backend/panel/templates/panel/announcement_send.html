@@ -1,0 +1,41 @@
+{% extends "panel/base.html" %}
+{% block title %}Haruka anúnsiu{% endblock %}
+{% block content %}
+<h1 class="h3 slab mb-3">Haruka anúnsiu</h1>
+<div class="row">
+  <div class="col-lg-7 mb-4">
+    <div class="card">
+      <div class="card-body">
+        <h2 class="h4">{{ ann.title }}</h2>
+        <p style="white-space: pre-line">{{ ann.body }}</p>
+        {% if ann.channel == 'sms' or ann.channel == 'email_sms' %}
+        <div class="border rounded p-2 bg-light small"><strong>SMS ({{ ann.body|length|add:6 }} karakter, maks. 300):</strong><br>OPMT: {{ ann.title }}. {{ ann.body|truncatechars:280 }}</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card border-dark">
+      <div class="card-body">
+        <dl class="mb-3">
+          <dt>Kanál</dt><dd>{{ ann.get_channel_display }}</dd>
+          <dt>Ba</dt><dd>{{ ann.get_audience_display }} · {{ ann.municipality|default:"Munisípiu hotu" }}</dd>
+          <dt>Membru simu</dt><dd class="h4 mb-0">{{ count }}</dd>
+          {% if ann.channel != 'site' %}<dd class="small text-muted">Ho email: {{ with_email }} · Ho telefone: {{ with_phone }}</dd>{% endif %}
+        </dl>
+        {% if ann.status == 'sent' %}
+          <div class="alert alert-info mb-0">Haruka ona iha {{ ann.sent_at|date:"d/m/Y H:i" }}.</div>
+        {% elif count == 0 %}
+          <div class="alert alert-warning mb-0">Laiha membru ba seleksaun ne'e.</div>
+        {% else %}
+          <form method="post">{% csrf_token %}
+            <button class="btn btn-opmt btn-block">Haruka ba membru {{ count }}</button>
+          </form>
+          <p class="small text-muted mt-2 mb-0">Membru sei haree anúnsiu ne'e iha sira-nia konta website.{% if ann.channel != 'site' %} Email/SMS la bele dada fila fali hafoin haruka.{% endif %}</p>
+        {% endif %}
+        <a class="btn btn-link px-0 mt-2" href="{% url 'panel:edit' 'announcements' ann.pk %}">Edita uluk</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

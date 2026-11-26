@@ -6,7 +6,10 @@ from django.views.generic import RedirectView
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 
+from accounts import member_api
 from accounts import views as acc
+from archive.api import StoryViewSet
+from events.api import EventViewSet
 from content import views as v
 
 router = DefaultRouter()
@@ -23,6 +26,8 @@ router.register("programs", v.ProgramViewSet)
 router.register("news", v.NewsViewSet)
 router.register("albums", v.AlbumViewSet)
 router.register("documents", v.DocumentViewSet)
+router.register("events", EventViewSet)
+router.register("stories", StoryViewSet, basename="story")
 
 api = [
     path("site/", v.site_view, name="site"),
@@ -36,6 +41,8 @@ api = [
     path("auth/me/", acc.MeView.as_view(), name="me"),
     path("auth/change-password/", acc.ChangePasswordView.as_view(), name="change_password"),
     path("auth/member-card/", acc.MemberCardView.as_view(), name="member_card"),
+    path("auth/overview/", member_api.my_overview, name="member_overview"),
+    path("verify/<uuid:token>/", member_api.verify_card, name="verify_card"),
     path("", include(router.urls)),
 ]
 

@@ -1,0 +1,147 @@
+{% extends "panel/base.html" %}{% load static %}
+{% block title %}Scan QR{% endblock %}
+{% block content %}
+<h1 class="h3 slab mb-1">Scan kartaun membru</h1>
+<p class="text-muted">Scan QR iha kartaun dijitál membru nian atu verifika no halo check-in. Se kámara la la'o, hatama númeru membru.</p>
+
+<div class="row">
+  <div class="col-lg-6 mb-4">
+    <div class="form-group">
+      <label for="event">Eventu ba check-in</label>
+      <select id="event" class="custom-select">
+        <option value="">— Verifika kartaun deit (la halo check-in) —</option>
+        {% for e in events %}
+        <option value="{{ e.pk }}" {% if selected == e.pk|stringformat:"s" %}selected{% endif %}>{{ e.starts_at|date:"d/m/Y" }} · {{ e.title_tet }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="scan-box mb-3">
+      <video id="video" playsinline muted aria-label="Kámara"></video>
+      <canvas id="canvas" hidden></canvas>
+      <div id="scan-hint" class="scan-hint">Kámara seidauk loke</div>
+    </div>
+    <button id="start" class="btn btn-opmt mr-2" type="button">Loke kámara</button>
+    <button id="stop" class="btn btn-outline-dark" type="button" hidden>Taka kámara</button>
+
+    <form id="manual" class="form-inline mt-3">
+      <label class="sr-only" for="code">Númeru membru</label>
+      <input id="code" class="form-control mr-2 mb-2" placeholder="OPMT-DIL-00001" autocomplete="off">
+      <button class="btn btn-outline-dark mb-2">Buka</button>
+    </form>
+  </div>
+  <div class="col-lg-6">
+    <div id="result" aria-live="polite"></div>
+    <h2 class="h6 mt-4">Scan ikus</h2>
+    <ul id="history" class="list-group small"></ul>
+  </div>
+</div>
+{% csrf_token %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'panel/vendor/jsQR.js' %}"></script>
+<script>
+(function () {
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  const hint = document.getElementById('scan-hint');
+  const result = document.getElementById('result');
+  const history = document.getElementById('history');
+  const eventSel = document.getElementById('event');
+  const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  let stream = null, lastCode = '', lastAt = 0, detector = null, busy = false;
+
+  if ('BarcodeDetector' in window) {
+    try { detector = new BarcodeDetector({ formats: ['qr_code'] }); } catch (e) { detector = null; }
+  }
+
+  function esc(s) { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
+
+  async function check(code) {
+    if (busy) return;
+    const now = Date.now();
+    if (code === lastCode && now - lastAt < 4000) return;   // ignore the same card held in front of the camera
+    lastCode = code; lastAt = now; busy = true;
+    try {
+      const res = await fetch('{% url "panel:scan_check" %}', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+        body: JSON.stringify({ code, event: eventSel.value || null }),
+      });
+      const data = await res.json();
+      render(data);
+    } catch (e) {
+      render({ ok: false, error: 'Koneksaun falla. Koko fali.' });
+    } finally { busy = false; }
+  }
+
+  function render(data) {
+    let html, cls, line;
+    if (!data.ok) {
+      cls = 'danger';
+      html = '<h2 class="h4 mb-0">' + esc(data.error) + '</h2>';
+      line = data.error;
+    } else {
+      const m = data.member;
+      cls = m.active ? 'success' : 'warning';
+      html = '<h2 class="h4 mb-1">' + esc(m.full_name) + '</h2>' +
+        '<div>' + esc(m.member_number || '—') + ' · ' + esc(m.municipality) + '</div>' +
+        '<div><strong>' + (m.active ? 'Membru ativu' : 'La ativu: ' + esc(m.status)) + '</strong></div>' +
+        (Number(m.dues_outstanding) > 0 ? '<div>Kuota seidauk selu: $' + esc(m.dues_outstanding) + '</div>' : '<div>Kuota tinan ne\'e: selu ona</div>');
+      if (m.checkin) {
+        html += '<hr><div class="h5 mb-0">' + (m.checkin.already ? 'Check-in tiha ona' : 'Check-in ✓') + ' · ' + esc(m.checkin.time) + '</div>' +
+          (m.checkin.walk_in ? '<div class="small">Seidauk rejista uluk — aumenta ona ba lista.</div>' : '');
+        if (m.checkin.already) cls = 'warning';
+      }
+      line = m.full_name + (m.checkin ? (m.checkin.already ? ' (tiha ona)' : ' ✓') : '');
+    }
+    result.innerHTML = '<div class="alert alert-' + cls + ' scan-result">' + html + '</div>';
+    const li = document.createElement('li');
+    li.className = 'list-group-item list-group-item-' + cls;
+    li.textContent = new Date().toLocaleTimeString().slice(0, 5) + ' — ' + line;
+    history.prepend(li);
+    if (navigator.vibrate) navigator.vibrate(cls === 'success' ? 80 : [60, 60, 60]);
+  }
+
+  async function tick() {
+    if (!stream) return;
+    if (video.readyState >= 2) {
+      let code = null;
+      if (detector) {
+        try { const codes = await detector.detect(video); code = codes[0] && codes[0].rawValue; } catch (e) { detector = null; }
+      } else if (window.jsQR) {
+        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        ctx.drawImage(video, 0, 0);
+        const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const qr = jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
+        code = qr && qr.data;
+      }
+      if (code) check(code);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  document.getElementById('start').addEventListener('click', async () => {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+      video.srcObject = stream; await video.play();
+      hint.hidden = true;
+      document.getElementById('start').hidden = true; document.getElementById('stop').hidden = false;
+      tick();
+    } catch (e) {
+      hint.textContent = 'La bele loke kámara. Fó lisensa ba kámara ka hatama númeru membru.';
+    }
+  });
+  document.getElementById('stop').addEventListener('click', () => {
+    if (stream) stream.getTracks().forEach((t) => t.stop());
+    stream = null; hint.hidden = false; hint.textContent = 'Kámara taka ona';
+    document.getElementById('start').hidden = false; document.getElementById('stop').hidden = true;
+  });
+  document.getElementById('manual').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const v = document.getElementById('code').value.trim();
+    if (v) { lastCode = ''; check(v); }
+  });
+})();
+</script>
+{% endblock %}

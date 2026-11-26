@@ -1,3 +1,4 @@
+import uuid
 from datetime import date
 
 from django.conf import settings
@@ -31,6 +32,7 @@ class MemberProfile(models.Model):
     status_note = models.CharField(max_length=255, blank=True)
     accepts_statutes = models.BooleanField(default=False)
     approved_at = models.DateTimeField(null=True, blank=True)
+    card_token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -53,3 +55,24 @@ class MemberProfile(models.Model):
         prefix = (self.municipality.code or "TL")[:3].upper()
         count = MemberProfile.objects.filter(member_number__startswith=f"OPMT-{prefix}-").count() + 1
         self.member_number = f"OPMT-{prefix}-{count:05d}"
+
+
+class StaffProfile(models.Model):
+    """Panel access scope. A staff user without a municipality is national staff;
+    with a municipality, they only see and manage that municipality's data."""
+
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="staff_profile", on_delete=models.CASCADE)
+    municipality = models.ForeignKey(
+        Municipality, null=True, blank=True, on_delete=models.PROTECT,
+        help_text="Mamuk = ekipa nasionál (asesu tomak)",
+    )
+    role = models.CharField("Knaar", max_length=120, blank=True)
+    phone = models.CharField(max_length=60, blank=True)
+
+    class Meta:
+        verbose_name = "Ekipa panel"
+        verbose_name_plural = "Ekipa panel"
+
+    def __str__(self):
+        scope = self.municipality.name if self.municipality else "Nasionál"
+        return f"{self.user.get_full_name() or self.user.username} ({scope})"

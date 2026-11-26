@@ -1,8 +1,9 @@
 <script setup>
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
+import QRCode from 'qrcode'
 import { useRouter } from 'vue-router'
 import api, { apiErrors } from '../api/client'
-import { formatDate } from '../i18n'
+import { formatDate, formatDateTime } from '../i18n'
 import { useAuth } from '../stores/auth'
 import PageHead from '../components/PageHead.vue'
 
@@ -38,6 +39,42 @@ async function changePassword() {
   } catch (e) { pwErr.value = apiErrors(e) }
 }
 
+// Card QR, dues, events and announcements
+const overview = ref(null)
+const qr = ref('')
+async function loadOverview() {
+  if (!m.value) return
+  try {
+    overview.value = (await api.get('auth/overview/')).data
+    if (overview.value.card) {
+      qr.value = await QRCode.toDataURL(overview.value.card.verify_url, { margin: 1, width: 320, color: { dark: '#1d1b16', light: '#ffffff' } })
+    }
+  } catch { overview.value = null }
+}
+onMounted(loadOverview)
+
+/** Save the card as a PNG to keep on the phone. */
+async function downloadCard() {
+  const W = 1012, H = 638
+  const c = document.createElement('canvas')
+  c.width = W; c.height = H
+  const g = c.getContext('2d')
+  g.fillStyle = '#1d1b16'; g.fillRect(0, 0, W, H)
+  const stripes = ['#c4161c', '#1d1b16', '#f2b705', '#1d1b16', '#0b7a3b', '#1d1b16']
+  const widths = [60, 8, 22, 8, 22, 8]
+  for (let x = 0, i = 0; x < W; i++) { g.fillStyle = stripes[i % 6]; g.fillRect(x, 0, widths[i % 6], 22); x += widths[i % 6] }
+  const load = (src) => new Promise((ok) => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => ok(null); im.src = src })
+  const [logo, code] = await Promise.all([load('/opmt-logo.jpg'), load(qr.value)])
+  if (logo) { g.save(); g.beginPath(); g.arc(110, 130, 70, 0, Math.PI * 2); g.fillStyle = '#fff'; g.fill(); g.clip(); g.drawImage(logo, 40, 60, 140, 140); g.restore() }
+  g.fillStyle = '#f2b705'; g.font = 'bold 30px "Alegreya Sans", sans-serif'; g.fillText('OPMT · Organização Popular da Mulher Timor', 210, 120)
+  g.fillStyle = '#ffffff'; g.font = '56px "Alfa Slab One", Georgia, serif'; g.fillText(m.value.full_name, 60, 330, 560)
+  g.font = 'bold 40px "Alegreya Sans", sans-serif'; g.fillText(m.value.member_number || '', 60, 400)
+  g.fillStyle = '#cfc8a5'; g.font = '32px "Alegreya Sans", sans-serif'; g.fillText(m.value.municipality_name, 60, 455)
+  if (code) { g.fillStyle = '#fff'; g.fillRect(650, 250, 310, 310); g.drawImage(code, 660, 260, 290, 290) }
+  const a = document.createElement('a')
+  a.href = c.toDataURL('image/png'); a.download = `opmt-${m.value.member_number || 'kartaun'}.png`; a.click()
+}
+
 async function logout() {
   await auth.logout()
   router.push('/')
@@ -56,20 +93,26 @@ async function logout() {
           <p v-if="m.status === 'pending'" class="alert warn">{{ $t('dashboard.pending') }}</p>
           <p v-else-if="m.status === 'rejected'" class="alert">{{ $t('dashboard.rejected') }} {{ m.status_note }}</p>
 
-          <!-- Digital member card -->
+          <!-- Digital member card with QR -->
           <div v-if="m.status === 'active'" class="card" aria-labelledby="card-title">
             <div class="tais" aria-hidden="true"></div>
             <div class="card-body">
-              <img src="/opmt-logo.jpg" alt="" width="72" height="72" />
-              <div>
-                <p id="card-title" class="card-org">OPMT · {{ $t('dashboard.card') }}</p>
-                <p class="card-name">{{ m.full_name }}</p>
-                <p class="card-num">{{ m.member_number }}</p>
-                <p class="card-meta">{{ m.municipality_name }}<template v-if="m.approved_at"> · {{ $t('dashboard.since') }} {{ formatDate(m.approved_at.slice(0, 10)) }}</template></p>
+              <div class="card-id">
+                <img src="/opmt-logo.jpg" alt="" width="64" height="64" />
+                <div>
+                  <p id="card-title" class="card-org">OPMT · {{ $t('dashboard.card') }}</p>
+                  <p class="card-name">{{ m.full_name }}</p>
+                  <p class="card-num">{{ m.member_number }}</p>
+                  <p class="card-meta">{{ m.municipality_name }}<template v-if="m.approved_at"> · {{ $t('dashboard.since') }} {{ formatDate(m.approved_at.slice(0, 10)) }}</template></p>
+                </div>
               </div>
+              <img v-if="qr" :src="qr" :alt="`QR ${m.member_number}`" class="qr" width="150" height="150" />
             </div>
           </div>
-          <p v-if="m.status === 'active'" class="muted">{{ $t('dashboard.cardNote') }}</p>
+          <template v-if="m.status === 'active'">
+            <p class="muted">{{ $t('dash.qrNote') }}</p>
+            <button v-if="qr" class="btn ghost" type="button" @click="downloadCard">{{ $t('dash.download') }}</button>
+          </template>
 
           <dl class="facts">
             <div><dt>{{ $t('dashboard.status') }}</dt><dd>{{ m.status_label }}</dd></div>
@@ -77,6 +120,51 @@ async function logout() {
             <div><dt>{{ $t('join.municipality') }}</dt><dd>{{ m.municipality_name }}<template v-if="m.administrative_post_name">, {{ m.administrative_post_name }}</template></dd></div>
           </dl>
           <RouterLink v-if="m.status === 'active'" :to="{ name: 'documents' }">{{ $t('dashboard.docs') }}</RouterLink>
+
+          <template v-if="overview">
+            <section class="block" aria-labelledby="ann-h">
+              <h2 id="ann-h">{{ $t('dash.news') }}</h2>
+              <p v-if="!overview.announcements.length" class="muted">{{ $t('dash.noNews') }}</p>
+              <article v-for="a in overview.announcements" :key="a.id" class="ann">
+                <p class="ann-meta">{{ formatDateTime(a.sent_at) }}<template v-if="a.scope"> · {{ a.scope }}</template></p>
+                <h3>{{ a.title }}</h3>
+                <p class="ann-body">{{ a.body }}</p>
+              </article>
+            </section>
+
+            <section class="block" aria-labelledby="ev-h">
+              <h2 id="ev-h">{{ $t('dash.events') }}</h2>
+              <p v-if="!overview.registrations.length" class="muted">{{ $t('dash.noEvents') }} <RouterLink :to="{ name: 'agenda' }">{{ $t('dash.seeAgenda') }}</RouterLink></p>
+              <ul v-else class="mini">
+                <li v-for="r in overview.registrations" :key="r.id">
+                  <RouterLink :to="{ name: 'event', params: { slug: r.event_slug } }">{{ r.event_title }}</RouterLink>
+                  <span class="muted"> · {{ formatDateTime(r.starts_at, undefined, r.time_confirmed) }}</span>
+                  <span class="tag" :class="{ red: r.status === 'attended' }">{{ r.status === 'attended' ? $t('agenda.attended') : $t('agenda.youreIn') }}</span>
+                </li>
+              </ul>
+            </section>
+
+            <section v-if="m.status === 'active'" class="block" aria-labelledby="dues-h">
+              <h2 id="dues-h">{{ $t('dash.dues') }}</h2>
+              <p v-if="overview.dues.current_rate" class="muted">{{ $t('dash.duesRate', { amount: overview.dues.current_rate }) }}</p>
+              <p v-else class="muted">{{ $t('dash.noRate') }}</p>
+              <table v-if="overview.dues.current_rate" class="dues">
+                <thead><tr><th scope="col">{{ $t('dash.year') }}</th><th scope="col">{{ $t('dash.due') }}</th><th scope="col">{{ $t('dash.paid') }}</th><th scope="col">{{ $t('dash.outstanding') }}</th></tr></thead>
+                <tbody>
+                  <tr v-for="y in overview.dues.years" :key="y.year">
+                    <th scope="row">{{ y.year }}</th><td>${{ y.due }}</td><td>${{ y.paid }}</td>
+                    <td :class="{ owing: Number(y.outstanding) > 0 }">${{ y.outstanding }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <template v-if="overview.dues.payments.length">
+                <h3>{{ $t('dash.payments') }}</h3>
+                <ul class="mini">
+                  <li v-for="(p, i) in overview.dues.payments" :key="i">{{ formatDate(p.paid_on) }} — ${{ p.amount }} ({{ p.year }}) · {{ p.method }}<template v-if="p.receipt_number"> · #{{ p.receipt_number }}</template></li>
+                </ul>
+              </template>
+            </section>
+          </template>
         </template>
         <p v-else-if="auth.user?.is_staff">
           <a href="/panel/">{{ $t('footer.panel') }}</a>
@@ -126,9 +214,24 @@ async function logout() {
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
 .forms { display: grid; gap: 3rem; }
 .forms h2 { font-size: var(--step-2); margin-bottom: 0; }
-.card { background: var(--ink); color: var(--paper); max-width: 440px; margin-bottom: 0.75rem; }
-.card-body { display: flex; gap: 1.1rem; padding: 1.25rem; align-items: center; }
-.card-body img { border-radius: 50%; background: #fff; flex: none; }
+.card { background: var(--ink); color: var(--paper); max-width: 640px; margin-bottom: 0.75rem; }
+.block { margin-top: 2.5rem; border-top: 2px solid var(--ink); padding-top: 1rem; }
+.block h2 { font-size: var(--step-2); }
+.block h3 { margin: 1rem 0 0.4rem; }
+.ann { padding: 0.75rem 0; border-bottom: 1px solid var(--line); }
+.ann h3 { margin: 0.1rem 0 0.25rem; }
+.ann-meta { font-size: var(--step--1); color: var(--khaki-dark); margin: 0; }
+.ann-body { white-space: pre-line; margin: 0; }
+.mini { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.5rem; }
+.mini .tag { margin-left: 0.4rem; }
+.dues { border-collapse: collapse; width: 100%; max-width: 480px; }
+.dues th, .dues td { text-align: left; padding: 0.45rem 0.5rem; border-bottom: 1px solid var(--line); }
+.dues thead th { border-bottom: 2px solid var(--ink); font-size: var(--step--1); }
+.dues .owing { color: var(--red-dark); font-weight: 700; }
+.card-body { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1.1rem; padding: 1.25rem; align-items: center; }
+.card-id { display: flex; gap: 1rem; align-items: center; min-width: 0; }
+.card-id img { border-radius: 50%; background: #fff; flex: none; }
+.qr { background: #fff; padding: 6px; width: 132px; height: 132px; flex: none; }
 .card-body p { margin: 0; }
 .card-org { font-size: var(--step--1); color: var(--yellow); font-weight: 700; }
 .card-name { font-family: var(--display); font-size: var(--step-1); color: #fff; line-height: 1.2; margin: 0.2rem 0 !important; }

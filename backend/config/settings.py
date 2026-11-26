@@ -30,6 +30,10 @@ INSTALLED_APPS = [
     "django_filters",
     "content",
     "accounts",
+    "events",
+    "archive",
+    "dues",
+    "comms",
     "panel",
 ]
 
@@ -118,7 +122,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 12,
     "DEFAULT_THROTTLE_CLASSES": ("rest_framework.throttling.ScopedRateThrottle",),
-    "DEFAULT_THROTTLE_RATES": {"auth": "20/min", "register": "10/hour", "contact": "10/hour"},
+    "DEFAULT_THROTTLE_RATES": {"auth": "20/min", "register": "10/hour", "contact": "10/hour", "story": "5/hour", "event_register": "20/hour", "verify": "60/min"},
 }
 
 SIMPLE_JWT = {
@@ -137,3 +141,24 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Email (announcements). Console in development; set SMTP values in production.
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
+EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "1") == "1"
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "OPMT <no-reply@opmt.tl>")
+
+# SMS (announcements): "console" or "http" — see comms/senders.py
+SMS_BACKEND = os.getenv("SMS_BACKEND", "console")
+SMS_HTTP_URL = os.getenv("SMS_HTTP_URL", "")
+SMS_HTTP_TOKEN = os.getenv("SMS_HTTP_TOKEN", "")
+SMS_HTTP_TO_FIELD = os.getenv("SMS_HTTP_TO_FIELD", "to")
+SMS_HTTP_TEXT_FIELD = os.getenv("SMS_HTTP_TEXT_FIELD", "text")
+SMS_HTTP_SENDER_FIELD = os.getenv("SMS_HTTP_SENDER_FIELD", "from")
+SMS_SENDER_ID = os.getenv("SMS_SENDER_ID", "OPMT")
+
+# Public site URL (used in QR codes on member cards)
+SITE_URL = os.getenv("SITE_URL", "http://localhost:5173")

@@ -1,0 +1,103 @@
+{% extends "panel/base.html" %}
+{% block title %}Estatístika{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+  <div>
+    <h1 class="h3 slab mb-0">Estatístika{% if scope %} · {{ scope.name }}{% endif %}</h1>
+    <div class="small text-muted">Atualiza {{ generated|date:"d/m/Y H:i" }}</div>
+  </div>
+  <div class="no-print mt-2 mt-sm-0">
+    <a class="btn btn-outline-dark mr-1" href="{% url 'panel:export_members' %}">Excel membru</a>
+    <a class="btn btn-outline-dark mr-1" href="{% url 'panel:export_payments' %}">Excel kuota</a>
+    <button class="btn btn-opmt" type="button" onclick="window.print()">Imprime / PDF</button>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-6 col-md mb-3"><div class="stat"><b>{{ totals.active }}</b><span>Membru ativu</span></div></div>
+  <div class="col-6 col-md mb-3"><div class="stat"><b>{{ totals.pending }}</b><span>Hein aprovasaun</span></div></div>
+  <div class="col-6 col-md mb-3"><div class="stat"><b>{{ totals.activities }}</b><span>Atividade</span></div></div>
+  <div class="col-6 col-md mb-3"><div class="stat"><b>{{ totals.events }}</b><span>Eventu</span></div></div>
+  <div class="col-6 col-md mb-3"><div class="stat"><b>{{ totals.attended }}</b><span>Partisipante check-in</span></div></div>
+</div>
+
+<div class="row">
+  <div class="col-lg-6 mb-4">
+    <div class="card h-100"><div class="card-body">
+      <h2 class="h5">Membru tuir munisípiu</h2>
+      <p class="small text-muted mb-3"><span class="key key-a"></span> ativu <span class="key key-p ml-2"></span> hein aprovasaun</p>
+      <table class="chart">
+        {% for r in by_muni %}
+        <tr><th scope="row">{{ r.label }}</th>
+          <td><div class="stack-bar"><div class="bar" style="width: {{ r.pct }}%"></div><div class="bar pend" style="width: {{ r.ppct }}%"></div></div></td>
+          <td class="num">{{ r.value }}{% if r.pending %} <span class="text-muted">+{{ r.pending }}</span>{% endif %}</td></tr>
+        {% endfor %}
+      </table>
+    </div></div>
+  </div>
+  <div class="col-lg-6 mb-4">
+    <div class="card mb-4"><div class="card-body">
+      <h2 class="h5">Membru foun kada fulan (fulan 13 ikus)</h2>
+      <div class="cols" role="img" aria-label="Membru foun kada fulan">
+        {% for r in growth %}
+        <div class="col-bar" title="{{ r.label }}: {{ r.value }}">
+          <span class="v">{{ r.value|default:"" }}</span>
+          <div style="height: {{ r.pct }}%"></div>
+          <span class="l">{{ r.label|slice:"5:" }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div></div>
+    <div class="card"><div class="card-body">
+      <h2 class="h5">Idade membru ativu</h2>
+      <table class="chart">
+        {% for r in ages %}
+        <tr><th scope="row">{{ r.label }}</th><td><div class="bar" style="width: {{ r.pct }}%"></div></td><td class="num">{{ r.value }}</td></tr>
+        {% endfor %}
+      </table>
+    </div></div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-6 mb-4">
+    <div class="card h-100"><div class="card-body">
+      <h2 class="h5">Kuota {{ dues.year }}</h2>
+      {% if dues.rate %}
+        <p class="mb-2">Valór: <strong>${{ dues.rate.annual_amount }}</strong> / membru / tinan</p>
+        <p class="mb-2">Simu ona: <strong>${{ dues.paid }}</strong> husi ${{ dues.expected }} ne'ebé hein</p>
+        <div class="progress" style="height: 22px"><div class="progress-bar bg-opmt" style="width: {{ dues.pct|default:0 }}%">{{ dues.pct|default:0 }}%</div></div>
+        <a class="d-inline-block mt-3 no-print" href="{% url 'panel:dues_report' %}">Haree sé mak seidauk selu</a>
+      {% else %}
+        <p class="text-muted">Seidauk define valór kuota. <a href="{% url 'panel:add' 'rates' %}">Define valór</a>.</p>
+      {% endif %}
+    </div></div>
+  </div>
+  <div class="col-lg-6 mb-4">
+    <div class="card h-100"><div class="card-body">
+      <h2 class="h5">Atividade tuir kategoria</h2>
+      <table class="chart">
+        {% for r in act_by_cat %}
+        <tr><th scope="row">{{ r.label }}</th><td><div class="bar alt" style="width: {{ r.pct }}%"></div></td><td class="num">{{ r.value }}</td></tr>
+        {% empty %}<tr><td class="text-muted">Seidauk iha atividade.</td></tr>{% endfor %}
+      </table>
+    </div></div>
+  </div>
+</div>
+
+<div class="card mb-4"><div class="card-body">
+  <h2 class="h5">Partisipasaun iha eventu</h2>
+  <div class="table-responsive">
+  <table class="table table-sm mb-0">
+    <thead><tr><th>Eventu</th><th>Data</th><th class="text-right">Rejista</th><th class="text-right">Mai</th><th style="width:35%"></th></tr></thead>
+    <tbody>
+    {% for r in events_rows %}
+      <tr><td><a href="{% url 'panel:list' 'registrations' %}?event={{ r.pk }}">{{ r.label }}</a></td><td>{{ r.date|date:"d/m/Y" }}</td>
+        <td class="text-right">{{ r.value }}</td><td class="text-right">{{ r.attended }}</td>
+        <td><div class="bar" style="width: {{ r.pct }}%"></div></td></tr>
+    {% empty %}<tr><td colspan="5" class="text-muted">Seidauk iha eventu.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div></div>
+{% endblock %}

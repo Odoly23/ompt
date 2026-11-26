@@ -7,12 +7,16 @@ import { useSite } from '../stores/site'
 import PersonCard from '../components/PersonCard.vue'
 import HeroSlider from '../components/HeroSlider.vue'
 import ScrollSlider from '../components/ScrollSlider.vue'
+import EventDate from '../components/EventDate.vue'
+import { formatDateTime } from '../i18n'
 
 const site = useSite()
 const history = useFetch('history/')
 const activities = useFetch('activities/', () => ({ page_size: 4 }))
 const figures = useFetch('figures/', () => ({ is_heroine: true }))
 const programs = useFetch('programs/')
+const events = useFetch('events/', () => ({ when: 'upcoming' }))
+const upcoming = computed(() => items(events.data.value).slice(0, 3))
 
 // Every event except internal organisation milestones, in order.
 const keyMoments = computed(() => (history.data.value || []).filter((e) => e.category !== 'organisation'))
@@ -101,6 +105,38 @@ const latest = computed(() => items(activities.data.value).slice(0, 4))
     </div>
   </section>
 
+  <section v-if="upcoming.length" class="section agenda-sec" aria-labelledby="agenda-title">
+    <div class="wrap">
+      <div class="section-head" v-reveal>
+        <h2 id="agenda-title">{{ $t('home2.agendaTitle') }}</h2>
+        <RouterLink :to="{ name: 'agenda' }">{{ $t('common.seeAll') }}</RouterLink>
+      </div>
+      <ul class="agenda" v-reveal.stagger>
+        <li v-for="e in upcoming" :key="e.id">
+          <EventDate :iso="e.starts_at" />
+          <div>
+            <h3><RouterLink :to="{ name: 'event', params: { slug: e.slug } }">{{ e.title }}</RouterLink></h3>
+            <p class="muted">{{ formatDateTime(e.starts_at, undefined, e.time_confirmed) }}<template v-if="e.location"> · {{ e.location }}</template></p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="memoria-band" aria-labelledby="mem-title">
+    <div class="wrap mem-inner" v-reveal>
+      <p class="quote" aria-hidden="true">“</p>
+      <div>
+        <h2 id="mem-title">{{ $t('home2.memoriaTitle') }}</h2>
+        <p>{{ $t('home2.memoriaText') }}</p>
+        <div class="mem-ctas">
+          <RouterLink class="btn" :to="{ name: 'story-new' }">{{ $t('memoria.share') }}</RouterLink>
+          <RouterLink class="btn ghost light-ghost" :to="{ name: 'memoria' }">{{ $t('nav.memoria') }}</RouterLink>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="join-band" aria-labelledby="join-title">
     <div class="wrap join-inner" v-reveal="{ from: 'left' }">
       <div>
@@ -137,6 +173,20 @@ const latest = computed(() => items(activities.data.value).slice(0, 4))
 .programs li { border-top: 2px solid var(--ink); padding: 1rem 0 1.25rem; }
 .programs p { margin: 0; color: var(--khaki-dark); }
 
+.agenda { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+.agenda li { display: flex; gap: 1rem; align-items: flex-start; }
+.agenda h3 { margin: 0 0 0.3rem; }
+.agenda h3 a { color: var(--ink); text-decoration: none; }
+.agenda h3 a:hover { color: var(--red); text-decoration: underline; }
+.agenda p { margin: 0; }
+.memoria-band { background: var(--khaki-dark); color: var(--paper); padding-block: clamp(2.5rem, 6vw, 4rem); }
+.mem-inner { display: grid; grid-template-columns: auto 1fr; gap: 0 2rem; align-items: start; }
+.quote { font-family: var(--display); font-size: clamp(6rem, 14vw, 10rem); line-height: 0.8; color: var(--yellow); margin: 0; }
+.memoria-band h2 { color: #fff; }
+.memoria-band p { font-size: var(--step-1); }
+.mem-ctas { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.light-ghost { color: #fff; border-color: #fff; }
+.light-ghost:hover { background: #fff; color: var(--ink); }
 .join-band { background: var(--red); color: #fff; padding-block: clamp(2rem, 5vw, 3rem); }
 .join-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem; }
 .join-band h2 { margin-bottom: 0.3rem; }

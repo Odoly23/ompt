@@ -530,3 +530,21 @@ SLIDES = [
         "en": "Any Timorese woman aged 16 or over can register online. The OPMT structure in your municipality will contact you."},
      "button": {"tet": "Rejista agora", "pt": "Inscrever-me", "id": "Daftar sekarang", "en": "Register now"}},
 ]
+
+# Commemorations with fixed dates (Perfil OPMT). Time and place still to be confirmed by OPMT.
+EVENTS = [
+    {"starts_at": "2027-08-28T09:00:00+09:00", "location": "Díli (fatin sei konfirma)", "municipality": "dili",
+     "title": {"tet": "Aniversáriu OPMT ba dala 52", "pt": "52.º aniversário da OPMT", "id": "Ulang tahun OPMT ke-52", "en": "OPMT 52nd anniversary"},
+     "description": {
+        "tet": "Komemorasaun loron harii OPMT, 28 agostu 1975. Oras no fatin sei konfirma.",
+        "pt": "Comemoração da fundação da OPMT, a 28 de Agosto de 1975. Hora e local a confirmar.",
+        "id": "Peringatan berdirinya OPMT, 28 Agustus 1975. Waktu dan tempat akan dikonfirmasi.",
+        "en": "Marking OPMT's founding on 28 August 1975. Time and place to be confirmed."}},
+    {"starts_at": "2027-11-03T09:00:00+09:00", "location": "Fatin sei konfirma",
+     "title": {"tet": "Loron Nasionál Feto", "pt": "Dia Nacional da Mulher", "id": "Hari Perempuan Nasional", "en": "National Women's Day"},
+     "description": {
+        "tet": "3 novembru, loron ne'ebé FRETILIN hili nu'udar Loron Feto atu fó omenajen ba Maria Tapó. Oras no fatin sei konfirma.",
+        "pt": "3 de Novembro, dia escolhido pela FRETILIN como Dia da Mulher em homenagem a Maria Tapó. Hora e local a confirmar.",
+        "id": "3 November, hari yang dipilih FRETILIN sebagai Hari Perempuan untuk menghormati Maria Tapó. Waktu dan tempat akan dikonfirmasi.",
+        "en": "3 November, chosen by FRETILIN as Women's Day in honour of Maria Tapó. Time and place to be confirmed."}},
+]

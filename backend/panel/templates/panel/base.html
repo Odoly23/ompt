@@ -31,15 +31,22 @@
   <div class="row">
     {% if user.is_authenticated %}
     <aside class="col-lg-2 collapse d-lg-block sidebar py-3" id="sidebar">
+      {% if panel_scope %}<div class="scope-badge">Munisípiu: <strong>{{ panel_scope.name }}</strong></div>{% endif %}
       <a class="side-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'panel:dashboard' %}">Dashboard</a>
       {% for group, items in panel_menu.items %}
-        <div class="side-group">{{ group }}</div>
-        {% for key, label in items %}
-          <a class="side-link {% if key == request.resolver_match.kwargs.key %}active{% endif %}" href="{% url 'panel:list' key %}">{{ label|capfirst }}</a>
+        {% if group != 'Dashboard' %}<div class="side-group">{{ group }}</div>{% endif %}
+        {% for kind, target, label in items %}
+          {% if kind == 'page' %}
+            {% url target as page_url %}
+            <a class="side-link {% if request.path == page_url %}active{% endif %}" href="{{ page_url }}">{{ label }}</a>
+          {% else %}
+            <a class="side-link {% if target == request.resolver_match.kwargs.key %}active{% endif %}" href="{% url 'panel:list' target %}">{{ label|capfirst }}</a>
+          {% endif %}
         {% endfor %}
       {% endfor %}
-      <div class="side-group">Sistema</div>
+      {% if not panel_scope %}
       <a class="side-link {% if request.resolver_match.url_name == 'settings' %}active{% endif %}" href="{% url 'panel:settings' %}">Konfigurasaun website</a>
+      {% endif %}
       <form method="post" action="{% url 'panel:logout' %}" class="d-lg-none mt-2">{% csrf_token %}
         <button class="btn btn-sm btn-outline-dark btn-block">Sai</button>
       </form>

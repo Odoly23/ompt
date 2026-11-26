@@ -41,12 +41,15 @@ class Command(BaseCommand):
     @transaction.atomic
     def handle(self, *args, **opts):
         if opts["reset"]:
+            from events.models import Event
+            Event.objects.all().delete()
             for model in (Slide, Photo, Album, Activity, News, Document, Leader, AdministrativePost,
                           SecretaryGeneralMandate, Figure, HistoryEvent, Objective, Program, Organ):
                 model.objects.all().delete()
             Municipality.objects.filter(memberprofile__isnull=True).delete()
         elif HistoryEvent.objects.exists():
             self.seed_slides()
+            self.seed_events()
             self.stdout.write("Content already loaded. Use --reset to reload.")
             return self.create_admin(opts.get("admin"))
 
@@ -154,8 +157,22 @@ class Command(BaseCommand):
         photo.save()
 
         self.seed_slides()
+        self.seed_events()
         self.stdout.write(self.style.SUCCESS("OPMT content loaded."))
         self.create_admin(opts.get("admin"))
+
+    def seed_events(self):
+        from events.models import Event
+
+        if Event.objects.exists():
+            return
+        for ev in D.EVENTS:
+            Event.objects.create(
+                starts_at=ev["starts_at"], location=ev["location"], is_sample=True, time_confirmed=False,
+                municipality=Municipality.objects.filter(code=ev.get("municipality")).first(),
+                **tr("title", ev["title"]), **tr("description", ev["description"]),
+            )
+        self.stdout.write("Events loaded.")
 
     def seed_slides(self):
         if Slide.objects.exists():

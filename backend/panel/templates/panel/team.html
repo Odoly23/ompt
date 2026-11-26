@@ -1,0 +1,56 @@
+{% extends "panel/base.html" %}
+{% block title %}Ekipa panel{% endblock %}
+{% block content %}
+<h1 class="h3 slab mb-1">Ekipa panel</h1>
+<p class="text-muted">Ekipa nasionál haree dadus hotu. Koordenadora munisipál haree no jere membru, atividade, eventu, kuota, anúnsiu no istória husi ninia munisípiu deit.</p>
+
+<div class="row">
+  <div class="col-lg-7 mb-4">
+    <div class="card">
+      <div class="table-responsive">
+      <table class="table mb-0">
+        <thead class="thead-light"><tr><th>Naran</th><th>Email</th><th>Asesu</th><th>Knaar</th><th></th></tr></thead>
+        <tbody>
+        {% for u in staff %}
+          <tr class="{% if not u.is_active %}text-muted{% endif %}">
+            <td>{{ u.get_full_name|default:u.username }}</td>
+            <td>{{ u.email }}</td>
+            <td>{% if u.is_superuser %}<span class="badge badge-dark">Super admin</span>{% elif u.staff_profile.municipality %}{{ u.staff_profile.municipality }}{% else %}Nasionál{% endif %}</td>
+            <td>{{ u.staff_profile.role|default:"–" }}</td>
+            <td class="text-right">
+              {% if not u.is_superuser and u != request.user %}
+              <form method="post" action="{% url 'panel:team_toggle' u.pk %}">{% csrf_token %}
+                <button class="btn btn-sm {% if u.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %}">{% if u.is_active %}Hapara{% else %}Ativa{% endif %}</button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card">
+      <div class="card-body">
+        <h2 class="h5">Aumenta membru ekipa</h2>
+        {% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+        <form method="post">{% csrf_token %}
+          <div class="form-group"><label for="t-name">Naran kompletu</label><input id="t-name" name="name" class="form-control" required value="{{ request.POST.name }}"></div>
+          <div class="form-group"><label for="t-email">Email (username)</label><input id="t-email" name="email" type="email" class="form-control" required value="{{ request.POST.email }}"></div>
+          <div class="form-group"><label for="t-pass">Password inisiál</label><input id="t-pass" name="password" type="password" class="form-control" minlength="8" required><small class="form-text text-muted">Karakter 8 ka liu. Fó ba ema ne'e liuhusi dalan seguru.</small></div>
+          <div class="form-group"><label for="t-muni">Munisípiu</label>
+            <select id="t-muni" name="municipality" class="custom-select">
+              <option value="">Nasionál (asesu tomak)</option>
+              {% for m in municipalities %}<option value="{{ m.pk }}">{{ m.name }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="form-group"><label for="t-role">Knaar</label><input id="t-role" name="role" class="form-control" placeholder="Koordenadora munisipál"></div>
+          <button class="btn btn-opmt">Kria konta</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

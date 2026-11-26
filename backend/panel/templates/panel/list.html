@@ -6,22 +6,25 @@
     <div class="small text-muted">{{ group }}</div>
     <h1 class="h3 slab mb-0">{{ model_name|capfirst }}</h1>
   </div>
-  {% if key != 'messages' %}
-  <a class="btn btn-opmt mt-2 mt-sm-0" href="{% url 'panel:add' key %}">Aumenta foun</a>
-  {% endif %}
+  <div class="mt-2 mt-sm-0">
+    {% if export_url %}<a class="btn btn-outline-dark mr-1" href="{% url export_url %}">Export Excel</a>{% endif %}
+    {% if key == 'payments' %}<a class="btn btn-outline-dark mr-1" href="{% url 'panel:dues_report' %}">Relatóriu kuota</a>{% endif %}
+    {% if key == 'registrations' or key == 'events' %}<a class="btn btn-outline-dark mr-1" href="{% url 'panel:scan' %}">Scan QR</a>{% endif %}
+    {% if key != 'messages' %}<a class="btn btn-opmt" href="{% url 'panel:add' key %}">Aumenta foun</a>{% endif %}
+  </div>
 </div>
 
 <form class="form-inline mb-3" method="get">
   <input class="form-control mr-2 mb-2" type="search" name="q" value="{{ q }}" placeholder="Buka…" aria-label="Buka">
-  {% if key == 'members' %}
+  {% if status_choices %}
   <select name="status" class="custom-select mr-2 mb-2" aria-label="Estadu">
     <option value="">Estadu hotu</option>
-    <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Hein aprovasaun</option>
-    <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Ativu</option>
-    <option value="rejected" {% if request.GET.status == 'rejected' %}selected{% endif %}>Rejeita</option>
-    <option value="inactive" {% if request.GET.status == 'inactive' %}selected{% endif %}>La ativu</option>
+    {% for value, label in status_choices %}
+    <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
   </select>
   {% endif %}
+  {% if request.GET.event %}<input type="hidden" name="event" value="{{ request.GET.event }}">{% endif %}
   {% if has_sample %}
   <div class="custom-control custom-checkbox mr-3 mb-2">
     <input type="checkbox" class="custom-control-input" id="sample" name="sample" value="1" {% if request.GET.sample %}checked{% endif %}>
@@ -51,6 +54,19 @@
               <input type="hidden" name="next" value="{{ request.get_full_path }}">
               <button class="btn btn-sm btn-outline-danger">Rejeita</button>
             </form>
+            {% endif %}
+            {% if key == 'registrations' and obj.status == 'registered' %}
+            <form method="post" action="{% url 'panel:registration_checkin' obj.pk %}" class="d-inline">{% csrf_token %}
+              <input type="hidden" name="next" value="{{ request.get_full_path }}">
+              <button class="btn btn-sm btn-success">Check-in</button>
+            </form>
+            {% endif %}
+            {% if key == 'events' %}
+            <a class="btn btn-sm btn-outline-dark" href="{% url 'panel:list' 'registrations' %}?event={{ obj.pk }}">Partisipante ({{ obj.registered_count }})</a>
+            <a class="btn btn-sm btn-outline-dark" href="{% url 'panel:export_registrations' obj.pk %}">xlsx</a>
+            {% endif %}
+            {% if key == 'announcements' and obj.status == 'draft' %}
+            <a class="btn btn-sm btn-opmt" href="{% url 'panel:announcement_send' obj.pk %}">Haruka</a>
             {% endif %}
             <a class="btn btn-sm btn-outline-secondary" href="{% url 'panel:edit' key obj.pk %}">Edita</a>
             <a class="btn btn-sm btn-outline-danger" href="{% url 'panel:delete' key obj.pk %}">Hamoos</a>

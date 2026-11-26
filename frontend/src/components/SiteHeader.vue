@@ -12,8 +12,9 @@ const route = useRoute()
 watch(() => route.fullPath, () => { open.value = false })
 
 const links = [
-  ['about', 'about'], ['history', 'history'], ['leadership', 'leadership'], ['activities', 'activities'],
-  ['news', 'news'], ['branches', 'branches'], ['documents', 'documents'], ['gallery', 'gallery'], ['contact', 'contact'],
+  ['about', 'about'], ['history', 'history'], ['memoria', 'memoria'], ['leadership', 'leadership'], ['agenda', 'agenda'],
+  ['activities', 'activities'], ['news', 'news'], ['branches', 'branches'], ['documents', 'documents'], ['gallery', 'gallery'],
+  ['contact', 'contact'],
 ]
 </script>
 
@@ -78,12 +79,12 @@ const links = [
 .menu-btn { display: none; font: 700 1rem var(--body); background: transparent; color: #fff; border: 1.5px solid #fff; min-height: 40px; padding: 0 0.8rem; cursor: pointer; }
 
 .nav { background: var(--paper); color: var(--ink); border-bottom: 1px solid var(--line); }
-.nav ul { display: flex; flex-wrap: wrap; gap: 0 1.5rem; list-style: none; margin: 0 auto; }
+.nav ul { display: flex; flex-wrap: wrap; gap: 0 1.25rem; list-style: none; margin: 0 auto; }
 .nav a { display: block; padding: 0.7rem 0; color: var(--ink); text-decoration: none; font-weight: 500; border-bottom: 3px solid transparent; }
 .nav a:hover { border-bottom-color: var(--khaki); }
 .nav a.router-link-active { border-bottom-color: var(--red); font-weight: 700; }
 
-@media (max-width: 1000px) {
+@media (max-width: 1100px) {
   .brand-sub { display: none; }
   .login-link, .tools > .btn { display: none; }
   .menu-btn { display: inline-block; }
