@@ -1,0 +1,168 @@
+/*
+ * OPMT design tokens.
+ * Palette taken from OPMT's own "Buibere Hamrik" exhibition poster (paper, khaki, red, rose, ink)
+ * plus the FRETILIN flag colours, used only in the woven tais band.
+ */
+:root {
+  --paper: #eee8c8;
+  --paper-2: #f6f2de;
+  --khaki: #8f8763;
+  --khaki-dark: #5f5940;
+  --red: #c4161c;
+  --red-dark: #9e1015;
+  --rose: #d8384c;
+  --ink: #1d1b16;
+  --yellow: #f2b705;
+  --green: #0b7a3b;
+  --line: #d6cfa8;
+
+  --display: 'Alfa Slab One', 'Rockwell', Georgia, serif;
+  --body: 'Alegreya Sans', 'Segoe UI', system-ui, sans-serif;
+
+  --step--1: 0.889rem;
+  --step-0: 1.125rem;
+  --step-1: 1.35rem;
+  --step-2: 1.7rem;
+  --step-3: clamp(1.9rem, 3.4vw, 2.4rem);
+  --step-4: clamp(2.4rem, 5.5vw, 3.6rem);
+
+  --wrap: 1180px;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: var(--body);
+  font-size: var(--step-0);
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--paper-2);
+}
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--red-dark); text-underline-offset: 0.18em; }
+a:hover { color: var(--red); }
+:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
+main:focus { outline: none; }
+
+h1, h2, h3 { font-family: var(--display); font-weight: 400; line-height: 1.08; margin: 0 0 0.5em; letter-spacing: 0.005em; }
+h1 { font-size: var(--step-4); }
+h2 { font-size: var(--step-3); }
+h3 { font-family: var(--body); font-weight: 700; font-size: var(--step-1); line-height: 1.25; letter-spacing: 0; }
+p { margin: 0 0 1em; max-width: 68ch; }
+
+.skip { position: absolute; left: -999px; top: 0; background: var(--ink); color: #fff; padding: 0.6rem 1rem; z-index: 100; }
+.skip:focus { left: 0.5rem; }
+.visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.wrap { width: 100%; max-width: var(--wrap); margin-inline: auto; padding-inline: var(--gutter); }
+
+/* Woven tais band: FRETILIN red, yellow, green on black. */
+.tais {
+  height: 10px;
+  background:
+    repeating-linear-gradient(90deg,
+      var(--red) 0 30px, var(--ink) 30px 34px, var(--yellow) 34px 46px, var(--ink) 46px 50px,
+      var(--green) 50px 62px, var(--ink) 62px 66px, var(--yellow) 66px 70px, var(--ink) 70px 74px);
+}
+.tais.thick { height: 16px; }
+
+/* Page heading: khaki block with the poster's red rule along its foot. */
+.page-head { background: var(--paper); border-bottom: 6px solid var(--red); padding-block: clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 4vw, 2.5rem); }
+.page-head h1 { margin-bottom: 0.3em; }
+.page-head p { font-size: var(--step-1); color: var(--khaki-dark); margin: 0; }
+.crumb { display: inline-block; margin-bottom: 0.75rem; font-weight: 500; }
+
+.section { padding-block: clamp(2.5rem, 6vw, 4.5rem); }
+.section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.5rem 1.5rem; margin-bottom: 1.5rem; }
+.section-head h2 { margin: 0; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+  font: 700 var(--step-0)/1.2 var(--body);
+  padding: 0.75rem 1.3rem; min-height: 48px;
+  border: 2px solid var(--red); background: var(--red); color: #fff;
+  text-decoration: none; cursor: pointer; border-radius: 2px;
+}
+.btn:hover { background: var(--red-dark); border-color: var(--red-dark); color: #fff; }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--ink); }
+.btn.ghost:hover { background: var(--ink); color: #fff; }
+.btn.light { background: var(--paper-2); color: var(--ink); border-color: var(--paper-2); }
+.btn.light:hover { background: #fff; border-color: #fff; color: var(--ink); }
+.btn[disabled] { opacity: 0.6; cursor: wait; }
+
+.tag {
+  display: inline-block; font-size: var(--step--1); font-weight: 700;
+  padding: 0.1rem 0.5rem; border: 1.5px solid currentColor; color: var(--khaki-dark); border-radius: 2px;
+}
+.tag.red { color: var(--red-dark); }
+.sample {
+  display: inline-block; font-size: var(--step--1); font-weight: 500;
+  padding: 0.05rem 0.45rem; background: #fff4c7; border: 1.5px dashed #b88a00; color: #6b5100; border-radius: 2px;
+}
+.muted { color: var(--khaki-dark); }
+
+/* Filter chips */
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.75rem; padding: 0; list-style: none; }
+.chips button {
+  font: 500 var(--step--1)/1 var(--body); padding: 0.6rem 0.9rem; min-height: 40px;
+  background: transparent; border: 1.5px solid var(--line); color: var(--ink); cursor: pointer; border-radius: 2px;
+}
+.chips button[aria-pressed='true'] { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+/* Date-led rows used for activities, news and documents */
+.rows { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
+.row { display: grid; grid-template-columns: 9rem 1fr; gap: 0.5rem 1.5rem; padding: 1.25rem 0; border-bottom: 1px solid var(--line); }
+.row-date { font-weight: 700; color: var(--khaki-dark); }
+.row h3 { margin-bottom: 0.3rem; }
+.row h3 a { color: var(--ink); text-decoration: none; }
+.row h3 a:hover { color: var(--red); text-decoration: underline; }
+.row p { margin: 0.25rem 0 0; }
+.row-meta { display: flex; flex-wrap: wrap; gap: 0.4rem 0.75rem; align-items: center; font-size: var(--step--1); margin-top: 0.5rem; }
+.row.with-image { grid-template-columns: 9rem 1fr 160px; }
+.row.with-image img { width: 160px; aspect-ratio: 4/3; object-fit: cover; }
+@media (max-width: 720px) {
+  .row, .row.with-image { grid-template-columns: 1fr; }
+  .row.with-image img { width: 100%; max-width: 360px; order: -1; }
+}
+
+/* People: photo or monogram */
+.people { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 2rem 1.5rem; }
+.person { display: flex; flex-direction: column; gap: 0.5rem; }
+.person .portrait { aspect-ratio: 4/5; background: var(--khaki); color: var(--paper); display: grid; place-items: center; overflow: hidden; }
+.person .portrait img { width: 100%; height: 100%; object-fit: cover; }
+.person .portrait span { font-family: var(--display); font-size: 3.2rem; }
+.person h3 { margin: 0.25rem 0 0; }
+.person .role { margin: 0; color: var(--khaki-dark); }
+
+/* Forms */
+.form { display: grid; gap: 1.1rem; max-width: 680px; }
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem 1.25rem; }
+@media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
+.field { display: grid; gap: 0.35rem; }
+.field label { font-weight: 700; }
+.field .hint { font-size: var(--step--1); color: var(--khaki-dark); }
+.field input, .field select, .field textarea {
+  font: inherit; color: inherit; width: 100%;
+  padding: 0.65rem 0.75rem; min-height: 48px;
+  border: 2px solid var(--line); background: #fff; border-radius: 2px;
+}
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--ink); outline: 3px solid var(--yellow); outline-offset: 0; }
+.field textarea { min-height: 150px; resize: vertical; }
+.field .err { color: var(--red-dark); font-size: var(--step--1); font-weight: 500; }
+.field [aria-invalid='true'] { border-color: var(--red); }
+.check { display: flex; gap: 0.7rem; align-items: flex-start; }
+.check input { width: 22px; height: 22px; margin-top: 0.2rem; accent-color: var(--red); flex: none; }
+.alert { padding: 0.9rem 1rem; border-left: 5px solid var(--red); background: #fff; margin-bottom: 1rem; }
+.alert.ok { border-left-color: var(--green); }
+.alert.warn { border-left-color: var(--yellow); background: #fffbe6; }
+
+.state { padding: 2rem 0; color: var(--khaki-dark); }
+
+.prose { max-width: 68ch; }
+.prose p { white-space: pre-line; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

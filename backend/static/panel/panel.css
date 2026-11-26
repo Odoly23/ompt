@@ -1,4 +1,8 @@
-/* OPMT panel — Bootstrap 4 with the OPMT palette (from the "Buibere Hamrik" poster) */
+/* OPMT panel — Bootstrap 4 (vendored) with the OPMT palette from the "Buibere Hamrik" poster */
+@font-face { font-family: "Alfa Slab One"; font-weight: 400; font-display: swap; src: url("vendor/fonts/alfa-slab-one-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Alegreya Sans"; font-weight: 400; font-display: swap; src: url("vendor/fonts/alegreya-sans-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Alegreya Sans"; font-weight: 400; font-display: swap; src: url("vendor/fonts/alegreya-sans-latin-ext-400-normal.woff2") format("woff2"); unicode-range: U+0100-02AF, U+1E00-1EFF; }
+@font-face { font-family: "Alegreya Sans"; font-weight: 700; font-display: swap; src: url("vendor/fonts/alegreya-sans-latin-700-normal.woff2") format("woff2"); }
 :root {
   --opmt-red: #c4161c;
   --opmt-rose: #d8384c;
