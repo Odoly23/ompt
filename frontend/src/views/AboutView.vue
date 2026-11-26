@@ -30,7 +30,7 @@ const paragraphs = computed(() => (site.info?.about || '').split('\n\n'))
   <section class="section">
     <div class="wrap">
       <h2>{{ $t('about.objectives') }}</h2>
-      <ol class="objectives">
+      <ol class="objectives" v-reveal.stagger>
         <li v-for="o in objectives.data.value || []" :key="o.id">{{ o.text }}</li>
       </ol>
     </div>
@@ -39,7 +39,7 @@ const paragraphs = computed(() => (site.info?.about || '').split('\n\n'))
   <section class="section">
     <div class="wrap">
       <h2>{{ $t('about.organs') }}</h2>
-      <dl class="organs">
+      <dl class="organs" v-reveal.stagger>
         <div v-for="o in organs.data.value || []" :key="o.id">
           <dt>{{ o.name }}</dt>
           <dd>{{ o.description }}</dd>

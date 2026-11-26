@@ -32,7 +32,7 @@ function submit() { search.value = q.value.trim(); page.value = 1 }
       </ul>
 
       <LoadState :loading="list.loading.value" :error="list.error.value" :empty="!items(list.data.value).length" @retry="list.reload">
-        <ul class="rows">
+        <ul class="rows" v-reveal.stagger>
           <li v-for="a in items(list.data.value)" :key="a.id" class="row" :class="{ 'with-image': a.image }">
             <span class="row-date">{{ a.date ? formatDate(a.date) : $t('activities.noDate') }}</span>
             <div>

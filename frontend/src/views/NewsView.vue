@@ -13,7 +13,7 @@ const list = useFetch('news/')
   <section class="section">
     <div class="wrap">
       <LoadState :loading="list.loading.value" :error="list.error.value" :empty="!items(list.data.value).length" @retry="list.reload">
-        <ul class="rows">
+        <ul class="rows" v-reveal.stagger>
           <li v-for="n in items(list.data.value)" :key="n.id" class="row" :class="{ 'with-image': n.image }">
             <span class="row-date">{{ formatDate(n.published_at) }}</span>
             <div>

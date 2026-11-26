@@ -17,7 +17,7 @@ const fileType = (url) => (url || '').split('?')[0].split('.').pop().toUpperCase
     <div class="wrap">
       <p v-if="!isActive" class="alert">{{ $t('documents.membersOnly') }} <RouterLink :to="{ name: 'login' }">{{ $t('nav.login') }}</RouterLink></p>
       <LoadState :loading="docs.loading.value" :error="docs.error.value" :empty="!(docs.data.value || []).length" @retry="docs.reload">
-        <ul class="rows">
+        <ul class="rows" v-reveal.stagger>
           <li v-for="d in docs.data.value" :key="d.id" class="row">
             <span class="row-date">{{ d.year || '–' }}</span>
             <div class="doc">

@@ -4,7 +4,7 @@ from .i18n import LANGS, resolve_lang, translated_value
 from .models import (
     Activity, AdministrativePost, Album, ContactMessage, Document, Figure, HistoryEvent,
     Leader, Municipality, News, Objective, Organ, Photo, Program, SecretaryGeneralMandate,
-    SiteSetting,
+    SiteSetting, Slide,
 )
 
 
@@ -49,6 +49,11 @@ def make_meta(model_cls, extra_exclude=()):
 class SiteSettingSerializer(TranslatedSerializer):
     translated = ("tagline", "about", "mission")
     Meta = make_meta(SiteSetting)
+
+
+class SlideSerializer(TranslatedSerializer):
+    translated = ("title", "text", "button")
+    Meta = make_meta(Slide)
 
 
 class ObjectiveSerializer(TranslatedSerializer):

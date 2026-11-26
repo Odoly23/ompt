@@ -3,6 +3,7 @@ import { onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import SiteHeader from './components/SiteHeader.vue'
 import SiteFooter from './components/SiteFooter.vue'
+import ScrollProgress from './components/ScrollProgress.vue'
 import { useSite } from './stores/site'
 
 const site = useSite()
@@ -12,6 +13,7 @@ watch(locale, () => site.load())
 </script>
 
 <template>
+  <ScrollProgress />
   <a class="skip" href="#main">{{ $t('skip') }}</a>
   <SiteHeader />
   <main id="main" tabindex="-1">

@@ -14,6 +14,7 @@ export default {
     empty: 'Nothing here yet.', all: 'All', download: 'Download', open: 'Open', year: 'Year',
     category: 'Category', send: 'Send', save: 'Save', back: 'Back',
   },
+  slider: { label: 'Highlights', prev: 'Previous', next: 'Next', pause: 'Pause', play: 'Play', goTo: 'Go to slide {n}', position: '{n} of {total}' },
   home: {
     heroTop: 'Buibere', heroLine2: 'Hamrik', heroLine3: 'Tuba rai metin', heroLine4: 'Ukun rasik an',
     lead: 'The Organização Popular da Mulher Timor was founded on 28 August 1975. For {years} years, women have organised for liberation, equality and social justice.',

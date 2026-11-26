@@ -27,7 +27,7 @@ function close() { dialog.value?.close(); viewer.value = null }
             <h2>{{ a.title }}</h2>
             <span class="muted">{{ a.date ? formatDate(a.date) : '' }} · {{ $t('gallery.photos', { n: a.photos_count }) }}</span>
           </div>
-          <ul class="grid">
+          <ul class="grid" v-reveal.stagger="{ from: 'scale' }">
             <li v-for="p in a.photos" :key="p.id">
               <button type="button" class="thumb" @click="open(p)">
                 <img :src="p.image" :alt="p.caption || a.title" loading="lazy" />

@@ -14,6 +14,7 @@ export default {
     empty: 'Belum ada data.', all: 'Semua', download: 'Unduh', open: 'Buka', year: 'Tahun',
     category: 'Kategori', send: 'Kirim', save: 'Simpan', back: 'Kembali',
   },
+  slider: { label: 'Sorotan', prev: 'Sebelumnya', next: 'Berikutnya', pause: 'Jeda', play: 'Putar', goTo: 'Ke slide {n}', position: '{n} dari {total}' },
   home: {
     heroTop: 'Buibere', heroLine2: 'Hamrik', heroLine3: 'Tuba rai metin', heroLine4: 'Ukun rasik an',
     lead: 'Organização Popular da Mulher Timor berdiri pada 28 Agustus 1975. Selama {years} tahun perempuan berorganisasi untuk pembebasan, kesetaraan, dan keadilan sosial.',

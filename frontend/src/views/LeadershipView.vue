@@ -23,7 +23,7 @@ const leadersFor = (code) => national.value.filter((l) => l.organ_code === code)
       <h2>{{ $t('leadership.current') }}</h2>
       <p v-if="hasVacancy" class="alert warn">{{ $t('leadership.vacancy') }}</p>
       <LoadState :loading="leaders.loading.value" :error="leaders.error.value" :empty="!national.length" @retry="leaders.reload">
-        <div class="people">
+        <div class="people" v-reveal.stagger="{ from: 'scale' }">
           <PersonCard v-for="l in national" :key="l.id"
                       :name="isUnknown(l) ? $t('common.toConfirm') : l.name" :unknown="isUnknown(l)"
                       :role="l.position" :photo="l.photo" :sample="l.is_sample" />
@@ -35,7 +35,7 @@ const leadersFor = (code) => national.value.filter((l) => l.organ_code === code)
   <section class="section organs-sec">
     <div class="wrap">
       <h2>{{ $t('leadership.organs') }}</h2>
-      <ol class="organ-list">
+      <ol class="organ-list" v-reveal.stagger>
         <li v-for="o in organs.data.value || []" :key="o.id">
           <h3>{{ o.name }}</h3>
           <p>{{ o.description }}</p>

@@ -2,7 +2,7 @@
 from accounts.models import MemberProfile
 from content.models import (
     Activity, AdministrativePost, Album, ContactMessage, Document, Figure, HistoryEvent, Leader,
-    Municipality, News, Objective, Organ, Photo, Program, SecretaryGeneralMandate,
+    Municipality, News, Objective, Organ, Photo, Program, SecretaryGeneralMandate, Slide,
 )
 
 # key: (model, menu group, list columns, search fields)
@@ -17,6 +17,7 @@ REGISTRY = {
     "posts": (AdministrativePost, "Lideransa", ["name", "municipality", "secretary"], ["name"]),
     "activities": (Activity, "Atividade", ["date", "title_tet", "category", "status", "municipality", "is_published"], ["title_tet", "location"]),
     "programs": (Program, "Atividade", ["order", "title_tet", "status"], ["title_tet"]),
+    "slides": (Slide, "Komunikasaun", ["order", "title_tet", "theme", "is_active"], ["title_tet"]),
     "news": (News, "Komunikasaun", ["published_at", "title_tet", "is_published", "is_sample"], ["title_tet"]),
     "albums": (Album, "Komunikasaun", ["date", "title_tet", "activity"], ["title_tet"]),
     "photos": (Photo, "Komunikasaun", ["album", "caption_tet", "order"], ["caption_tet"]),

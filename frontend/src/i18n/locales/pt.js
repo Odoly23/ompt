@@ -14,6 +14,7 @@ export default {
     empty: 'Ainda não há dados.', all: 'Todos', download: 'Descarregar', open: 'Abrir', year: 'Ano',
     category: 'Categoria', send: 'Enviar', save: 'Guardar', back: 'Voltar',
   },
+  slider: { label: 'Destaques', prev: 'Anterior', next: 'Seguinte', pause: 'Pausar', play: 'Reproduzir', goTo: 'Ir para o slide {n}', position: '{n} de {total}' },
   home: {
     heroTop: 'Buibere', heroLine2: 'Hamrik', heroLine3: 'Tuba rai metin', heroLine4: 'Ukun rasik an',
     lead: 'A Organização Popular da Mulher Timor foi criada a 28 de Agosto de 1975. Há {years} anos que as mulheres se organizam pela libertação, igualdade e justiça social.',

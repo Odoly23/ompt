@@ -210,7 +210,7 @@ HISTORY = [
         "pt": "Onze membros da OPMT integram a Assembleia Constituinte e colaboram na elaboração da Constituição da RDTL.",
         "id": "Sebelas anggota OPMT duduk di Majelis Konstituante dan ikut menyusun Konstitusi RDTL.",
         "en": "Eleven OPMT members sit in the Constituent Assembly and help draft the RDTL Constitution."}},
-    {"year": 2006, "date": "2006-04-01", "category": "organisation",
+    {"year": 2006, "category": "organisation",
      "title": {"tet": "I Konferénsia Nasionál", "pt": "I Conferência Nacional", "id": "Konferensi Nasional I", "en": "1st National Conference"},
      "body": {
         "tet": "Konferénsia Nasionál aprova estatutu OPMT no hili Maria Lourdes Assunção Alves \"Merita\" nu'udar Sekretária-Jeral (2006–2011).",
@@ -502,4 +502,31 @@ DOCUMENTS = [
         "pt": "Capa da exposição da OPMT, com apoio do Gabinete de Apoio à Sociedade Civil.",
         "id": "Sampul pameran OPMT, didukung Gabinete de Apoio à Sociedade Civil.",
         "en": "Cover of the OPMT exhibition, supported by the Civil Society Support Office."}},
+]
+
+SLIDES = [
+    {"theme": "paper", "image": "slide-buibere-hamrik.jpg", "link": "/atividade",
+     "title": {"tet": "Tinan 50 OPMT: 1975–2025", "pt": "50 anos da OPMT: 1975–2025", "id": "50 tahun OPMT: 1975–2025", "en": "50 years of OPMT: 1975–2025"},
+     "text": {
+        "tet": "Husi krexe dahuluk iha 1975 to'o selebrasaun sinkuentenáriu iha 13 setembru 2025.",
+        "pt": "Da primeira creche em 1975 à celebração do cinquentenário a 13 de Setembro de 2025.",
+        "id": "Dari tempat penitipan anak pertama pada 1975 hingga perayaan 50 tahun pada 13 September 2025.",
+        "en": "From the first crèche in 1975 to the 50th anniversary celebration on 13 September 2025."},
+     "button": {"tet": "Haree atividade", "pt": "Ver actividades", "id": "Lihat kegiatan", "en": "See activities"}},
+    {"theme": "ink", "link": "/istoria",
+     "title": {"tet": "Livru \"Buibere Hamriik Ukun Rasik An\"", "pt": "Livro \"Buibere Hamriik Ukun Rasik An\"", "id": "Buku \"Buibere Hamriik Ukun Rasik An\"", "en": "The book \"Buibere Hamriik Ukun Rasik An\""},
+     "text": {
+        "tet": "Kontribuisaun feto sira ba luta libertasaun nasionál. Edisaun daruak iha faze revizaun.",
+        "pt": "A contribuição das mulheres para a luta de libertação nacional. A segunda edição está em revisão.",
+        "id": "Kontribusi perempuan dalam perjuangan pembebasan nasional. Edisi kedua sedang direvisi.",
+        "en": "Women's contribution to the national liberation struggle. A second edition is under revision."},
+     "button": {"tet": "Lee istória", "pt": "Ler a história", "id": "Baca sejarah", "en": "Read the history"}},
+    {"theme": "red", "link": "/sai-membru",
+     "title": {"tet": "Sai membru OPMT", "pt": "Torne-se membro da OPMT", "id": "Jadi anggota OPMT", "en": "Become an OPMT member"},
+     "text": {
+        "tet": "Feto timor hotu ho tinan 16 ka liu bele rejista online. Estrutura OPMT iha ita-nia munisípiu sei kontaktu ita.",
+        "pt": "Qualquer mulher timorense com 16 anos ou mais pode inscrever-se online. A estrutura da OPMT no seu município entrará em contacto.",
+        "id": "Setiap perempuan Timor berusia 16 tahun ke atas bisa mendaftar online. Struktur OPMT di munisipiu Anda akan menghubungi Anda.",
+        "en": "Any Timorese woman aged 16 or over can register online. The OPMT structure in your municipality will contact you."},
+     "button": {"tet": "Rejista agora", "pt": "Inscrever-me", "id": "Daftar sekarang", "en": "Register now"}},
 ]

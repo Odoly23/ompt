@@ -14,7 +14,7 @@ from django.db import transaction
 from content import seed_data as D
 from content.models import (
     Activity, AdministrativePost, Album, Document, Figure, HistoryEvent, Leader, Municipality,
-    News, Objective, Organ, Photo, Program, SecretaryGeneralMandate, SiteSetting,
+    News, Objective, Organ, Photo, Program, SecretaryGeneralMandate, SiteSetting, Slide,
 )
 
 FILES = Path(__file__).resolve().parents[2] / "seed_files"
@@ -41,11 +41,12 @@ class Command(BaseCommand):
     @transaction.atomic
     def handle(self, *args, **opts):
         if opts["reset"]:
-            for model in (Photo, Album, Activity, News, Document, Leader, AdministrativePost,
+            for model in (Slide, Photo, Album, Activity, News, Document, Leader, AdministrativePost,
                           SecretaryGeneralMandate, Figure, HistoryEvent, Objective, Program, Organ):
                 model.objects.all().delete()
             Municipality.objects.filter(memberprofile__isnull=True).delete()
         elif HistoryEvent.objects.exists():
+            self.seed_slides()
             self.stdout.write("Content already loaded. Use --reset to reload.")
             return self.create_admin(opts.get("admin"))
 
@@ -152,8 +153,20 @@ class Command(BaseCommand):
         attach(photo.image, "buibere-hamrik-poster.jpg")
         photo.save()
 
+        self.seed_slides()
         self.stdout.write(self.style.SUCCESS("OPMT content loaded."))
         self.create_admin(opts.get("admin"))
+
+    def seed_slides(self):
+        if Slide.objects.exists():
+            return
+        for i, sl in enumerate(D.SLIDES, 1):
+            slide = Slide(order=i, theme=sl["theme"], link=sl.get("link", ""),
+                          **tr("title", sl["title"]), **tr("text", sl["text"]), **tr("button", sl["button"]))
+            if sl.get("image"):
+                attach(slide.image, sl["image"])
+            slide.save()
+        self.stdout.write("Slides loaded.")
 
     def create_admin(self, email):
         if not email:

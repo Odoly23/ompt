@@ -6,7 +6,7 @@ from rest_framework.throttling import ScopedRateThrottle
 
 from .models import (
     Activity, Album, Document, Figure, HistoryEvent, Leader, Municipality, News, Objective,
-    Organ, Program, SecretaryGeneralMandate, SiteSetting,
+    Organ, Program, SecretaryGeneralMandate, SiteSetting, Slide,
 )
 from . import serializers as s
 
@@ -31,6 +31,13 @@ class BaseViewSet(viewsets.ModelViewSet):
         if self.published_field and not is_staff(self.request):
             qs = qs.filter(**{self.published_field: True})
         return qs
+
+
+class SlideViewSet(BaseViewSet):
+    queryset = Slide.objects.all()
+    serializer_class = s.SlideSerializer
+    published_field = "is_active"
+    pagination_class = None
 
 
 class ObjectiveViewSet(BaseViewSet):

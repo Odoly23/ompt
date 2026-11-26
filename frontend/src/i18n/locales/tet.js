@@ -14,6 +14,7 @@ export default {
     empty: 'Seidauk iha dadus.', all: 'Hotu', download: 'Download', open: 'Loke', year: 'Tinan',
     category: 'Kategoria', send: 'Haruka', save: 'Rai', back: 'Fila',
   },
+  slider: { label: 'Destake sira', prev: 'Slide anterior', next: 'Slide tuir mai', pause: 'Para', play: 'Hala\'o', goTo: 'Ba slide {n}', position: '{n} husi {total}' },
   home: {
     heroTop: 'Buibere', heroLine2: 'Hamrik', heroLine3: 'Tuba rai metin', heroLine4: 'Ukun rasik an',
     lead: 'Organização Popular da Mulher Timor harii iha 28 agostu 1975. Tinan {years} feto sira organiza-an ba libertasaun, igualdade no justisa sosiál.',

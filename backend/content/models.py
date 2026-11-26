@@ -53,6 +53,32 @@ class SiteSetting(TranslatedMixin, Timestamped):
         return obj
 
 
+class Slide(TranslatedMixin, Timestamped):
+    """Home page slider. The first slide (the poster design) is built into the site;
+    these slides follow it."""
+
+    THEME = [("red", "Mean"), ("ink", "Metan"), ("khaki", "Kafé"), ("paper", "Krema")]
+    add_translated(locals(), "title", required=True)
+    add_translated(locals(), "text", kind="text")
+    add_translated(locals(), "button", max_length=60, required=False)
+    link = models.CharField(
+        max_length=255, blank=True,
+        help_text="Pájina internu (ez. /istoria) ka URL kompletu (https://…)",
+    )
+    image = models.ImageField(upload_to="slides/", blank=True)
+    theme = models.CharField(max_length=10, choices=THEME, default="ink")
+    order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["order", "id"]
+        verbose_name = "Slide"
+        verbose_name_plural = "Slide sira (slider uma)"
+
+    def __str__(self):
+        return self.title_tet
+
+
 class Objective(TranslatedMixin, models.Model):
     """Objectives from the OPMT statutes (Art. 4-5)."""
 

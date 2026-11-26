@@ -10,6 +10,7 @@ from accounts import views as acc
 from content import views as v
 
 router = DefaultRouter()
+router.register("slides", v.SlideViewSet)
 router.register("objectives", v.ObjectiveViewSet)
 router.register("history", v.HistoryEventViewSet)
 router.register("figures", v.FigureViewSet)

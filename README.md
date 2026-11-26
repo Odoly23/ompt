@@ -17,6 +17,8 @@ Website resmi OPMT (organisasi perempuan FRETILIN, berdiri 28 Agustus 1975), dal
 - **Estrutura**: peta 13 munisípiu + RAEOA beserta postu administrativu
 - **Sai membru**: pendaftaran online (umur ≥16 dan setuju Estatutu, Art. 6), login JWT, dashboard anggota, kartu anggota digital
 - **Kontaktu**: formulir pesan yang masuk ke panel
+- **Slider beranda**: slide pertama adalah desain poster "Buibere Hamrik"; slide berikutnya dikelola di **Panel → Slide sira** (judul, teks, tombol, link, gambar, warna tema, urutan, aktif/nonaktif — 4 bahasa). Autoplay 7 detik, berhenti saat disentuh/di-hover/fokus, tombol jeda, panah, titik, swipe, dan keyboard
+- **Animasi scrolling**: konten muncul bertahap saat di-scroll (`v-reveal`), progress bar di atas layar, efek parallax pada ilustrasi poster, garis linimasa Istória yang tergambar mengikuti scroll, serta slider horizontal "Momentu boot". Semua animasi otomatis mati jika pengguna memilih *reduce motion* di perangkatnya
 
 Data awal diambil dari dokumen yang dikirim Filomena de Almeida (OPMT, 17 Okt 2025): *Perfil OPMT no atividades*, *Estatutos da OPMT*, dan poster pameran. Data yang belum dikonfirmasi (pengurus saat ini, koordinator munisípiu, jumlah anggota) ditandai **dadus ezemplu** dan ditampilkan di dashboard panel sampai diganti.
 
@@ -54,6 +56,7 @@ Semua endpoint ada di `/api/v1/`. Bahasa dipilih dengan `?lang=tet|pt|id|en` ata
 | Endpoint | Keterangan |
 |---|---|
 | `GET site/`, `GET stats/` | Info organisasi dan angka ringkas |
+| `slides/` | Slide beranda (yang aktif) |
 | `history/`, `figures/{slug}`, `secretaries-general/`, `objectives/` | Sejarah |
 | `organs/{code}`, `leaders/` | Struktur dan pengurus |
 | `activities/{slug}`, `programs/` | Kegiatan (`?category=&status=&municipality__code=&search=`) |
