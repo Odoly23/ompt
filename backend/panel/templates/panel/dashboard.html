@@ -1,0 +1,69 @@
+{% extends "panel/base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1 class="h3 slab mb-4">Dashboard</h1>
+
+<div class="row">
+  {% with c=counts %}
+  <div class="col-6 col-md-4 col-xl mb-3"><a class="stat" href="{% url 'panel:list' 'members' %}?status=pending"><b>{{ c.members_pending }}</b><span>Membru hein aprovasaun</span></a></div>
+  <div class="col-6 col-md-4 col-xl mb-3"><a class="stat" href="{% url 'panel:list' 'members' %}?status=active"><b>{{ c.members_active }}</b><span>Membru ativu</span></a></div>
+  <div class="col-6 col-md-4 col-xl mb-3"><a class="stat" href="{% url 'panel:list' 'activities' %}"><b>{{ c.activities }}</b><span>Atividade</span></a></div>
+  <div class="col-6 col-md-4 col-xl mb-3"><a class="stat" href="{% url 'panel:list' 'news' %}"><b>{{ c.news }}</b><span>Notísia</span></a></div>
+  <div class="col-6 col-md-4 col-xl mb-3"><a class="stat" href="{% url 'panel:list' 'messages' %}"><b>{{ c.messages_unread }}</b><span>Mensajen foun</span></a></div>
+  {% endwith %}
+</div>
+
+{% if sample_counts %}
+<div class="alert alert-warning">
+  <strong>Dadus ezemplu sei iha.</strong> Konteúdu tuir mai ne'e seidauk konfirma husi OPMT. Troka ho dadus loos molok website loke ba públiku:
+  <ul class="mb-0 mt-2">
+    {% for key, label, n in sample_counts %}
+      <li><a href="{% url 'panel:list' key %}?sample=1">{{ label|capfirst }}: {{ n }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+<div class="row">
+  <div class="col-lg-7 mb-4">
+    <div class="card h-100">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <strong>Membru hein aprovasaun</strong>
+        <a class="small" href="{% url 'panel:list' 'members' %}?status=pending">Haree hotu</a>
+      </div>
+      <ul class="list-group list-group-flush">
+        {% for m in pending %}
+        <li class="list-group-item d-flex flex-wrap justify-content-between align-items-center">
+          <div>
+            <a href="{% url 'panel:edit' 'members' m.pk %}">{{ m.full_name }}</a>
+            <div class="small text-muted">{{ m.municipality }} · tinan {{ m.age }} · {{ m.phone }}</div>
+          </div>
+          <form method="post" action="{% url 'panel:member_status' m.pk 'approve' %}" class="m-0">{% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <button class="btn btn-sm btn-success">Aprova</button>
+          </form>
+        </li>
+        {% empty %}
+        <li class="list-group-item text-muted">Laiha pedidu foun.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-lg-5 mb-4">
+    <div class="card h-100">
+      <div class="card-header bg-white"><strong>Mensajen ikus</strong></div>
+      <ul class="list-group list-group-flush">
+        {% for msg in latest_messages %}
+        <li class="list-group-item">
+          <a href="{% url 'panel:edit' 'messages' msg.pk %}">{{ msg.subject }}</a>
+          {% if not msg.is_read %}<span class="badge badge-danger ml-1">foun</span>{% endif %}
+          <div class="small text-muted">{{ msg.name }} · {{ msg.created_at|date:"d/m/Y H:i" }}</div>
+        </li>
+        {% empty %}
+        <li class="list-group-item text-muted">Seidauk iha mensajen.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

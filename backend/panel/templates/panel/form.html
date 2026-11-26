@@ -1,0 +1,84 @@
+{% extends "panel/base.html" %}{% load panel_tags %}
+{% block title %}{{ model_name|capfirst }}{% endblock %}
+
+{% block content %}
+{% if not is_settings %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb bg-transparent px-0">
+    <li class="breadcrumb-item"><a href="{% url 'panel:list' key %}">{{ group }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{% if obj %}Edita{% else %}Foun{% endif %}</li>
+  </ol>
+</nav>
+{% endif %}
+<h1 class="h3 slab mb-4">{% if obj and not is_settings %}{{ obj }}{% else %}{{ model_name|capfirst }}{% endif %}</h1>
+
+{% if obj.is_sample %}
+<div class="alert alert-warning small">Ida ne'e <strong>dadus ezemplu</strong>. Troka ho informasaun loos husi OPMT, depois hasai marka "Dadus ezemplu".</div>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data" novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="form-row">
+      {% for f in plain %}
+        {% if f|is_checkbox %}
+        <div class="col-md-6 mb-3">
+          <div class="custom-control custom-checkbox mt-md-4">
+            {{ f|bs }}
+            <label class="custom-control-label" for="{{ f.id_for_label }}">{{ f.label }}</label>
+          </div>
+          {% if f.help_text %}<small class="form-text text-muted">{{ f.help_text }}</small>{% endif %}
+        </div>
+        {% else %}
+        <div class="col-md-6 mb-3">
+          <label for="{{ f.id_for_label }}">{{ f.label }}{% if f.field.required %} <span class="text-danger" aria-hidden="true">*</span>{% endif %}</label>
+          {{ f|bs }}
+          {% if f.help_text %}<small class="form-text text-muted">{{ f.help_text }}</small>{% endif %}
+          {% for e in f.errors %}<div class="invalid-feedback d-block">{{ e }}</div>{% endfor %}
+        </div>
+        {% endif %}
+      {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  {% if tabs %}
+  <div class="card mb-4">
+    <div class="card-header bg-white pb-0">
+      <p class="small text-muted mb-2">Konteúdu iha lian haat. Tetun obrigatóriu; lian seluk se mamuk sei hatudu Tetun.</p>
+      <ul class="nav nav-tabs card-header-tabs" role="tablist">
+        {% for lang, label, fields in tabs %}
+        <li class="nav-item">
+          <a class="nav-link {% if forloop.first %}active{% endif %}" id="tab-{{ lang }}" data-toggle="tab" href="#pane-{{ lang }}" role="tab" aria-controls="pane-{{ lang }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">{{ label }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="card-body tab-content">
+      {% for lang, label, fields in tabs %}
+      <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="pane-{{ lang }}" role="tabpanel" aria-labelledby="tab-{{ lang }}">
+        {% for f in fields %}
+        <div class="form-group">
+          <label for="{{ f.id_for_label }}">{{ f.label }}{% if f.field.required %} <span class="text-danger" aria-hidden="true">*</span>{% endif %}</label>
+          {{ f|bs }}
+          {% for e in f.errors %}<div class="invalid-feedback d-block">{{ e }}</div>{% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="d-flex flex-wrap">
+    <button class="btn btn-opmt mr-2 mb-2" name="save">Rai</button>
+    {% if not is_settings %}
+    <button class="btn btn-outline-dark mr-2 mb-2" name="save_add">Rai no aumenta seluk</button>
+    <a class="btn btn-link mb-2" href="{% url 'panel:list' key %}">Kansela</a>
+    {% endif %}
+  </div>
+</form>
+{% endblock %}

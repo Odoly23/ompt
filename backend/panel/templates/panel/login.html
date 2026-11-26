@@ -1,0 +1,30 @@
+{% extends "panel/base.html" %}{% load static panel_tags %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="row justify-content-center pt-4">
+  <div class="col-sm-9 col-md-6 col-lg-4">
+    <div class="card login-card">
+      <div class="card-body p-4">
+        <img src="{% static 'panel/opmt-logo.jpg' %}" alt="Logo OPMT" width="96" height="96" class="d-block mx-auto mb-3">
+        <h1 class="h4 text-center slab mb-1">Panel OPMT</h1>
+        <p class="text-center text-muted small mb-4">Ba ekipa administrasaun deit</p>
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger small">Username ka password la loos. Koko fali.</div>
+        {% endif %}
+        <form method="post">{% csrf_token %}
+          <div class="form-group">
+            <label for="id_username">Username</label>
+            {{ form.username|bs }}
+          </div>
+          <div class="form-group">
+            <label for="id_password">Password</label>
+            {{ form.password|bs }}
+          </div>
+          <input type="hidden" name="next" value="{{ next }}">
+          <button class="btn btn-opmt btn-block">Tama</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

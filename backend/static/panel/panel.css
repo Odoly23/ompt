@@ -1,0 +1,36 @@
+/* OPMT panel — Bootstrap 4 with the OPMT palette (from the "Buibere Hamrik" poster) */
+:root {
+  --opmt-red: #c4161c;
+  --opmt-rose: #d8384c;
+  --opmt-khaki: #8f8763;
+  --opmt-paper: #eee8c8;
+  --opmt-ink: #1d1b16;
+  --opmt-yellow: #f2b705;
+  --opmt-green: #0b7a3b;
+}
+body { font-family: "Alegreya Sans", system-ui, sans-serif; font-size: 1.02rem; background: #f7f5ea; color: var(--opmt-ink); }
+.slab, .brand-word { font-family: "Alfa Slab One", Georgia, serif; font-weight: 400; letter-spacing: .01em; }
+.tais {
+  height: 8px;
+  background: repeating-linear-gradient(90deg,
+    var(--opmt-red) 0 28px, var(--opmt-ink) 28px 34px, var(--opmt-yellow) 34px 44px,
+    var(--opmt-ink) 44px 50px, var(--opmt-green) 50px 62px, var(--opmt-ink) 62px 68px);
+}
+.panel-top { background: var(--opmt-ink); }
+.text-light-50 { color: rgba(255,255,255,.6); }
+.sidebar { background: #fff; border-right: 1px solid #e3dfc9; min-height: calc(100vh - 66px); }
+.side-group { font-size: .8rem; color: var(--opmt-khaki); margin: 1rem .75rem .25rem; font-weight: 700; }
+.side-link { display: block; padding: .35rem .75rem; color: var(--opmt-ink); border-left: 3px solid transparent; }
+.side-link:hover { background: var(--opmt-paper); color: var(--opmt-ink); text-decoration: none; }
+.side-link.active { border-left-color: var(--opmt-red); background: var(--opmt-paper); font-weight: 700; }
+.btn-opmt { background: var(--opmt-red); border-color: var(--opmt-red); color: #fff; }
+.btn-opmt:hover, .btn-opmt:focus { background: #a31217; border-color: #a31217; color: #fff; }
+a { color: #a31217; }
+.stat { display: block; background: #fff; border: 1px solid #e3dfc9; border-top: 4px solid var(--opmt-red); padding: 1rem; color: var(--opmt-ink); height: 100%; }
+.stat:hover { text-decoration: none; color: var(--opmt-ink); background: var(--opmt-paper); }
+.stat b { display: block; font-family: "Alfa Slab One", Georgia, serif; font-weight: 400; font-size: 2rem; line-height: 1; }
+.stat span { font-size: .9rem; color: #5c5843; }
+.login-card { border-top: 6px solid var(--opmt-red); }
+.card { border-color: #e3dfc9; }
+.nav-tabs .nav-link.active { border-top: 3px solid var(--opmt-red); font-weight: 700; }
+:focus-visible { outline: 3px solid var(--opmt-yellow); outline-offset: 2px; }
